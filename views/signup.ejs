@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+<body>
+    <%- include('header.ejs')%>
+    <h1>SignUp</h1>
+    <% if(locals.errorMessage){%>
+        <p style="color: orangered;"><%= locals.errorMessage%></p>
+    <%}%>
+    
+    <form action="/signup" method="post">
+        <div>
+            <label for="FullName">FullName</label>
+            <input type="text" name="FullName" id="FullName" required>
+        </div>
+        <div>
+            <label for="address">Home Address</label>
+            <input type="text" name="address" id="address" required>
+        </div>
+        <div>
+            <label for="phone">Phone Number</label>
+            <input type="text" name="phone" id="phone" required>
+        </div>
+        <div>
+            <label for="email">Email</label>
+            <input type="text" name="email" id="email" required>
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            <p id="passworderror"></p>
+        </div>
+        <div>
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" name="confirmPassword" id="confirmPassword" required>
+            <p id="confirmPassworderror"></p>
+        </div>
+        <input type="submit" value="SignUp">
+    </form>
+    <p>Already have an account? <a href="/signin">Sign In</a></p>
+
+    <script>
+        const passworderror = document.getElementById('passworderror')
+        const passwordInput = document.getElementById('password')
+      passwordInput.addEventListener('input',()=>{
+            if(passwordInput.value.length<8){
+                passworderror.textContent='Password must be over 8 characters'
+            }else{
+                passworderror.textContent=''
+            }
+        })
+        document.getElementById("confirmpassword").addEventListener('input',()=>{
+            if(passwordInput.value!==document.getElementById('confirmpassword').value){
+                passworderror.textContent="The password and confirm password do not match"
+            }else{
+                passworderror.textContent=""
+            }
+        })
+    </script>
+</body>
+</html>
