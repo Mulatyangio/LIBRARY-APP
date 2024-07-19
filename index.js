@@ -1,6 +1,8 @@
 const express=require('express')
 const bcrypt=require('bcrypt')
+const session=require('express-session')
 const mysql=require('mysql')
+
 const dbconn=mysql.createConnection({
     host:'localhost',
     user:'root',
@@ -10,10 +12,27 @@ const dbconn=mysql.createConnection({
 const app= express()
 //middleware application
 app.use(express.urlencoded({extended:true}))
+app.use(session({
+    secret:'your encryptionkey',
+    resave:false,
+    saveUninitialized:true,
+    Cookie: {secure:true}
+}))
 app.use((req,res,next)=>{
-    console.log("current request path",req.path);
+    const privateRoutes=['/profile']
+    const adminRoutes=['/newauthor','/approveuser','/completeorder']
+    if(req.session && req.session.user){
+        res.locals.user=req.session.user
+        if(req.session.user.Email !=="admin@gmail.com" && adminRoutes.includes(req.path)){
+            res.status(401).send('unauthorized access.Only admins can access this route')
+        }else{
+            next ()
+        }
+    }else if(privateRoutes.includes(req.path)|| adminRoutes.includes(req.path)){
+        res.status(401).send('unauthorized access.Log in first')
+    }else{ next ()}
 
-    next ()
+   
 })
 
 app.get('/',(req,res)=>{
@@ -70,15 +89,28 @@ app.post('/signin',(req,res)=>{
             }else{
                 let passwordMatch=bcrypt.compareSync(req.body.password,member[0].password)
                 console.log(passwordMatch);
-                res.redirect('/')
-        }
+                if(passwordMatch){
+                    //initiate a session\
+                    req.session.user=member[0];
+                    res.redirect('/')
+                }else{
+                    res.render('signin.ejs',{errorMessage:"Password incorrect."})
+                } }
 
         }
     })
 
 
 })
+app.get('/logout',(req,res)=>{
+    req.session.destroy(err=>{
+        if(err){
+            res.status(500).send('server error')}
+            else{ 
+                res.redirect('/')}
+    });
    
+})
 
 app.get('/authors',(req,res)=>{
     dbconn.query('SELECT * FROM authors',(err,authors)=>{

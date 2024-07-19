@@ -3,7 +3,14 @@
     <nav>
         <a href="/authors">Authors</a>
         <a href="/books">Books</a>
-        <a href="/profile">My Profile</a>
-        <a href="/signin">Sign In</a>
+
+        <% if (locals.user){%>
+            <a href="/profile"><%=locals.user.FullName.split(" ")[0]%></a>
+            <a href="/logout">Logout</a>
+            <% }else{%>
+                <a href="/signin">Sign In</a>
+            <%} %>    
+       
+        
     </nav>
 </header>
