@@ -10,7 +10,16 @@
     <main>
         <section id="hero">
             <h1>Books</h1>
-    
+            <div class="books">
+                <%locals.books.forEach(book=>{%>
+                    <div class="book" id="book-<%book.isbn%>">
+                        <img src="/images/cover 1.jpeg" alt="cover for <%=book.title%>">
+                        <h2><%=book.title%></h2>
+                        <p>Year:<%= book.publiction%></p>
+                        <p>Author:</p>
+                    </div>    
+                <%})%>
+            </div>
         </section>
         
     </main>

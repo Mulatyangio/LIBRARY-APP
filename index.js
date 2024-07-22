@@ -2,7 +2,7 @@ const express=require('express')
 const bcrypt=require('bcrypt')
 const session=require('express-session')
 const mysql=require('mysql')
-
+const path =require('path')
 const dbconn=mysql.createConnection({
     host:'localhost',
     user:'root',
@@ -12,18 +12,20 @@ const dbconn=mysql.createConnection({
 const app= express()
 //middleware application
 app.use(express.urlencoded({extended:true}))
+app.use(express.static(path.join(__dirname,"public")))
 app.use(session({
-    secret:'your encryptionkey',
+    secret:'yourencryptionkey',
     resave:false,
     saveUninitialized:true,
-    Cookie: {secure:true}
+    Cookie: {secure:false}
 }))
+//authorization middleware
 app.use((req,res,next)=>{
     const privateRoutes=['/profile']
     const adminRoutes=['/newauthor','/approveuser','/completeorder']
     if(req.session && req.session.user){
         res.locals.user=req.session.user
-        if(req.session.user.Email !=="admin@gmail.com" && adminRoutes.includes(req.path)){
+        if(req.session.user.Email !=="johnmwanda@gmail.com" && adminRoutes.includes(req.path)){
             res.status(401).send('unauthorized access.Only admins can access this route')
         }else{
             next ()
@@ -145,14 +147,25 @@ app.post('/newauthor',(req,res)=>{
     })
    
 })
-app.get('/books',(req,res)=>{
-    console.log('Getting books');
-    res.render('books.ejs')
-})
-app.get('/profile',(req,res)=>{
-    console.log('Getting profile');
-    res.render('profile.ejs')
-})
+//joins and types of joins in sql with examples
+  app.get("/books",(req,res)=>{
+     dbconn.query("SELECT * FROM books JOIN authors ON books.author=authors.AuthorID",(err,books)=>{
+       if(err){
+         res.status(500).send('server error')      
+           }else{
+                res.render("books.ejs",{books})
+            }
+       })   })
+
+       app.get("/profile",(req,res)=>{
+        dbconn.query(`SELECT * FROM members WHERE MemberID=${req.session.user.MemberID}`,(error,member)=>{
+            if(error){
+                res.status(500).send('server error')
+                }else{
+                    res.render("profile.ejs",{member:member[0]})
+                }
+        })
+     })
 //last route
 app.get('*',(req,res)=>{
     res.status(404).render('404.ejs')

@@ -30,6 +30,8 @@
               <%}%>
      
                  </div>
+                 <!--optional chaining -->
+            <%if(locals?.user?.Email=="johnmwanda@gmail.com"){%>     
             <form action="/newauthor" method="post">
                 <label for="id">ID</label>
                 <input type="number" name="id" id="id" placeholder="Enter ID">
@@ -48,7 +50,7 @@
                 <textarea name="bio" id="bio"></textarea>
                 <input type="submit" value="Add Author">
             </form>
-            
+            <%}%>
         </section>
     </main>
     <footer>
