@@ -2,7 +2,10 @@ const express=require('express')
 const bcrypt=require('bcrypt')
 const session=require('express-session')
 const mysql=require('mysql')
+const multer=require('multer')
+const upload= multer({ dest: 'public/images/covers'})
 const path =require('path')
+const { log } = require('console')
 const dbconn=mysql.createConnection({
     host:'localhost',
     user:'root',
@@ -21,7 +24,7 @@ app.use(session({
 }))
 //authorization middleware
 app.use((req,res,next)=>{
-    const privateRoutes=['/profile']
+    const privateRoutes=['/profile','/borrow']
     const adminRoutes=['/newauthor','/approveuser','/completeorder']
     if(req.session && req.session.user){
         res.locals.user=req.session.user
@@ -130,10 +133,7 @@ app.get('/auth',(req,res)=>{
     
     res.send('hi there')
 })
-app.get('/books/:id',(req,res)=>{
-    console.log(req.params.id);
-    res.send('hi there')
-})
+
 app.post('/newauthor',(req,res)=>{
     console.log('posting author');
     let sql=`INSERT INTO authors (FullName, Nationality,YOB,Biography,AuthorID) VALUES('${req.body.name}','${req.body.nationality}','${req.body.YOB}','${req.body.bio}','${req.body.id}')`
@@ -147,25 +147,101 @@ app.post('/newauthor',(req,res)=>{
     })
    
 })
+app.post('/newbook',upload.single("cover"),(req,res)=>{
+    console.log(req.file);
+    //insert a new file
+    dbconn.query(`INSERT INTO books(isbn,title,synopsis,author,publiction,availability,cover) VALUES("${req.body.isbn}","${req.body.title}","${req.body.synopsis}","${req.body.author.split("-")[0]}","${req.body.publiction}","AVAILABLE","${req.file.filename}")`,(sqlerror)=>{
+        if(sqlerror){
+            res.status(500).send(' server error-sql insert into books')
+        }else{
+            res.redirect('/books')
+        }
+    })
+  
+
+})
 //joins and types of joins in sql with examples
   app.get("/books",(req,res)=>{
      dbconn.query("SELECT * FROM books JOIN authors ON books.author=authors.AuthorID",(err,books)=>{
        if(err){
          res.status(500).send('server error')      
            }else{
-                res.render("books.ejs",{books})
+                dbconn.query('SELECT * FROM authors',(selErr,authors)=>{
+                    if(selErr){
+                        res.status(500).send('server error')
+                    }else{
+                      res.render("books.ejs",{books,authors})  
+                    }
+                })
+                
             }
        })   })
 
        app.get("/profile",(req,res)=>{
-        dbconn.query(`SELECT * FROM members WHERE MemberID=${req.session.user.MemberID}`,(error,member)=>{
-            if(error){
+        dbconn.query(`SELECT * FROM records JOIN books ON records.Book=books.isbn WHERE member=${req.session.user.MemberID
+        }`,(err,records)=>{
+            if(err){
+                console.log(err);
                 res.status(500).send('server error')
+            }else{
+                if(req.query.message){
+                    res.render("profile.ejs",{records, message:true})
                 }else{
-                    res.render("profile.ejs",{member:member[0]})
+                    res.render("profile.ejs",{records})
                 }
+                
+            }
+
         })
      })
+app.get('/book/:isbn',(req,res)=>{
+    console.log(req.params.isbn);
+    dbconn.query(`SELECT * FROM books WHERE isbn=${req.params.isbn}`, (err,book)=>{
+        if(err){
+            res.status(500).send('server error')
+        }else{
+                res.render('book.ejs',{book})
+        }
+    })
+
+})    
+app.get('/borrow',(req,res)=>{
+    console.log("borrowing........")
+    dbconn.query(`SELECT availability FROM books WHERE isbn=${req.query.isbn}`,(error,result)=>{
+        if(error){
+            console.log(error);
+            res.status(500).send('server error')
+        }else{
+           console.log(result);
+            if(result.length>0 && result[0].availability=='AVAILABLE'){
+                //CREATE NEW RECORD
+                dbconn.query(`INSERT INTO records(Member,Book,DateBorrowed,ReturnDate) VALUES(${req.session.user.MemberID},${req.query.isbn},'2024-07-04','2024-08-01')`,(sqlerror)=>{
+                    if(sqlerror){
+                        console.log(sqlerror);
+                        res.status(500).send('server error')
+                    }else{
+                        //UPDATE BOOKS TABLE
+                        dbconn.query(`UPDATE books SET availability='UNAVAILABLE' WHERE isbn=${req.query.isbn}`,(updateError)=>{
+                            if(updateError){
+                                console.log(updateError);
+                                res.status(500).send('server error')
+                            }else{
+                                res.redirect('/profile?message=borrowed')
+                                
+                            }   
+                        })
+                    }
+                     
+                })
+                
+            }else{
+                res.send('book is not available')
+            
+            }
+        }
+     
+    })
+})
 //last route
 app.get('*',(req,res)=>{
     res.status(404).render('404.ejs')

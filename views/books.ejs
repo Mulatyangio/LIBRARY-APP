@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>library app</title>
+    <link rel="stylesheet" href="/css/new.css">
+    <link rel="stylesheet" href="/css/books.css">
 </head>
 <body>
     <%- include('header.ejs')%>
@@ -12,15 +14,44 @@
             <h1>Books</h1>
             <div class="books">
                 <%locals.books.forEach(book=>{%>
-                    <div class="book" id="book-<%book.isbn%>">
-                        <img src="/images/cover 1.jpeg" alt="cover for <%=book.title%>">
-                        <h2><%=book.title%></h2>
+                    <div class="book" id="book-<%=book.isbn%>">
+                        <img src="/books/<%=book.cover%>" alt="cover for <%=book.title%>">
+                       <a href="/book/<%=book.isbn%>"><h2><%=book.title%></h2></a> 
                         <p>Year:<%= book.publiction%></p>
-                        <p>Author:</p>
+                        <p>Author:<%=book.FullName%></p>
+                        <p>synopsis:<%=book.synopsis%></p>
                     </div>    
                 <%})%>
             </div>
+            <!-- locals?.user?.Email=="johnmwanda@gmail.com" -->
+            <%if(true){%>     
+                <form action="/newbook" method="post" enctype="multipart/form-data">
+                    <label for="isbn">ISBN</label>
+                    <input type="number" name="isbn" id="isbn" placeholder="Enter ID" required>
+                    <label for="title">Title</label>
+                    <input type="text" name="title" id="title">
+                    <label for="publiction">Publication year</label>
+                    
+                    <select name="publiction" id="publiction">
+                        <%for(let year=2024; year>1870; year--){%>
+                            <option value="<%=year%>"><%=year%></option>
+                            <%}%>
+                    </select>
+                    <input list="authors" id="author" name="author">
+                    <datalist id="authors">
+                        <% locals.authors.forEach(author=>{%>
+                            <option value="<%= author.AuthorID %>-<%= author.FullName %>">></option>
+                        <%})%>
+                    </datalist>
+                    <label for="cover">Book Cover</label>
+                    <input type="file" id="cover" name="cover">
+                    <label for="synopsis">synopsis</label>
+                    <textarea name="synopsis" id="synopsis"></textarea>
+                    <input type="submit" value="Add book">
+                </form>
+                <%}%>
         </section>
+
         
     </main>
     <footer>

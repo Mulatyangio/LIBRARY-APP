@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>library app</title>
+    <link rel="stylesheet" href="/css/new.css">
+    <link rel="stylesheet" href="/css/authors.css">
 </head>
 <body>
     <%- include('header.ejs')%>
@@ -29,7 +31,7 @@
                  <h2>Currently there are no authors!!</h2>
               <%}%>
      
-                 </div>
+             </div>
                  <!--optional chaining -->
             <%if(locals?.user?.Email=="johnmwanda@gmail.com"){%>     
             <form action="/newauthor" method="post">

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>library app</title>
+    <link rel="stylesheet" href="/css/new.css">
+    <link rel="stylesheet" href="/css/authors.css">
 </head>
 <body>
     <%- include('header.ejs')%>
@@ -21,7 +23,7 @@
         </section>
     </main>
     <footer>
-        <p>LibApp &copy;<% new Date().getFullYear()%>.All rights Reserved</p>
+        <p>LibApp &copy;<%= new Date().getFullYear()%>.All rights Reserved</p>
     </footer>
 </body>
 </html>

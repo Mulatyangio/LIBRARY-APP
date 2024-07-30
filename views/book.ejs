@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <%- include("_header.ejs")%>
+    <main>
+        <section id="hero">
+            <% if(locals.book.length<1){%>
+                <h1>Book Not Found</h1>
+                <%}else{%>
+            <h1><%= locals.book[0].title%></h1> 
+            <div class="flex">
+                <div>
+                    <img src="/images/cover 1.jpeg" alt="<%=locals.book[0].title%>">
+                </div>
+                <div>
+                    <h2><%=locals.book[0].FullName%></h2>
+                    <p><%=locals.book[0].publiction%></p> 
+                    <a href="/borrow?isbn=<%= locals.book[0].isbn%>" style="background-color: green; padding: 12px 18px; color: white;">BORROW NOW</a>
+                    <p><%= locals.book[0].synopsis%></p>
+                </div>
+            </div>
+            <div class="reviews"><h2>What other readers say</h2></div>
+            <%}%>
+        </section>
+    </main>
+</body>
+</html>

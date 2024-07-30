@@ -9,8 +9,26 @@
     <%- include('header.ejs')%>
     <main>
         <section id="hero">
-            <h1>Profile</h1>
-        </section>
+            <h1><%= locals.user.FullName%></h1>
+            <% if(locals.message){%>
+                <p style="background-color: green; color: azure; text-align: center; padding: 12px;">Book Borrowed Successfully!!!</p>
+            <%}%>
+            <h2>Books Borrowed</h2>
+            <table>
+                <tr>
+                    <th>Book Title</th>
+                    <th>Date Borrowed</th>
+                    <th>Date To Return</th>
+                </tr>
+            <% records.reverse().forEach(record=>{ %>
+                    <tr> 
+                        <td><%=record.title%></td>
+                        <td><%=record.DateBorrowed.toLocaleDateString()%></td>
+                        <td><%=record.ReturnDate.toLocaleDateString() %></td>
+                    </tr>
+            <% }) %>
+                            
+            </table>   
         
     </main>
     <footer>

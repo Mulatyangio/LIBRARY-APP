@@ -1,0 +1,59 @@
+
+header{
+    display: flex;
+    background-color: gray;
+    height: 100px;
+    justify-content: space-between ;
+
+}
+header nav{
+    
+    justify-content: space-evenly;
+  
+}
+header nav a{
+    text-decoration: none;
+    background-color: chartreuse;
+    padding: 20px;
+    border-radius: 10px;
+}
+header a{
+    text-decoration: none;
+    background-color: chartreuse;
+    padding: 20px;
+    border-radius: 10px;
+    height: 13px;
+    color: black ;
+}
+header a:hover{
+    background-color: crimson;
+}
+header a:focus{
+    background-color: crimson;
+}
+.books{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.book{
+    width: 20%;
+    margin: 10px;
+    
+}
+.book img{
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+.book a{
+    text-decoration: none;
+    color: black ;
+}
+.authors{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+/* new.css */
+
