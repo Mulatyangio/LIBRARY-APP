@@ -40,7 +40,7 @@
                     <input list="authors" id="author" name="author">
                     <datalist id="authors">
                         <% locals.authors.forEach(author=>{%>
-                            <option value="<%= author.AuthorID %>-<%= author.FullName %>">></option>
+                            <option value="<%= author.AuthorID %>-<%= author.FullName %>"></option>
                         <%})%>
                     </datalist>
                     <label for="cover">Book Cover</label>
